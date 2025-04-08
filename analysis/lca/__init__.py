@@ -35,7 +35,7 @@ def compute_activity_flows(df, flow_output, flow_info):
             flow["value"] = round(row['value'] * flow_output['value'], 9)
 
         flow_dict[i.lower()] = flow
-        
+
     return flow_dict
 
 
@@ -240,7 +240,8 @@ def run(pathways, indicator='GWP'):
         df = df.sort_values('stage')
 
         name = df['name'].iloc[0]
-        data = data.append(df[['value', 'stage', 'sub_stage', 'pathway']])
+        # Use pd.concat instead of append (which is deprecated in newer pandas versions)
+        data = pd.concat([data, df[['value', 'stage', 'sub_stage', 'pathway']]], ignore_index=True)
 
     return dict(
         title=f'Lifecycle GHG Emissions',

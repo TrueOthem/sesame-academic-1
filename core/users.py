@@ -63,15 +63,24 @@ def authenticate(email, password):
         return None
 
 def encode_token(user):
-    return jwt.encode({'user_id': user.id}, jwt_secret, algorithm='HS256').decode('utf-8')
+    # In newer versions of PyJWT, encode returns a string, not bytes
+    token = jwt.encode({'user_id': user.id}, jwt_secret, algorithm='HS256')
+    # Handle both string and bytes return types for compatibility
+    if isinstance(token, bytes):
+        return token.decode('utf-8')
+    return token
 
 def decode_token(token):
     try:
-        data = jwt.decode(token, jwt_secret, algorithm='HS256')
+        # In newer versions of PyJWT, we need to specify algorithms parameter
+        data = jwt.decode(token, jwt_secret, algorithms=['HS256'])
         return find(data['user_id'])
     except jwt.exceptions.InvalidSignatureError:
         return None
     except jwt.exceptions.DecodeError:
+        return None
+    except Exception as e:
+        print(f"JWT decode error: {e}")
         return None
 
 if __name__ == '__main__':

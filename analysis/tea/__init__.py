@@ -32,7 +32,8 @@ def run(tea_pathway):
     results = tea_pathway.perform()
     cost_df = perform_tea(results)
     cost_df['pathway'] = tea_pathway.name
-    data = data.append(cost_df[['value', 'cost_category', 'cost_category_by_parts', 'pathway']])
+    # Use pd.concat instead of append (which is deprecated in newer pandas versions)
+    data = pd.concat([data, cost_df[['value', 'cost_category', 'cost_category_by_parts', 'pathway']]], ignore_index=True)
     table = results['table']
 
     return dict(
