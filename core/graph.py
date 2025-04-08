@@ -1,9 +1,13 @@
-import matplotlib.pyplot as plt
+# Set non-interactive backend to avoid macOS issues
+import matplotlib
+matplotlib.use('Agg')  # Use non-interactive backend
 
+import matplotlib.pyplot as plt
 from analysis.lca import perform_lcia
 
 def plot(analysis_result, x, y='value', group_by=None):
-    df = analysis_result['data'].pivot_table(index=x, values=y, columns=group_by)
+    # Fix for pandas FutureWarning: specify observed=False explicitly
+    df = analysis_result['data'].pivot_table(index=x, values=y, columns=group_by, observed=False)
     df.plot(kind='bar', stacked=True, rot=0)
 
     plt.title(analysis_result['title'], fontweight='bold', fontsize=14)
@@ -14,7 +18,10 @@ def plot(analysis_result, x, y='value', group_by=None):
     plt.ylabel(unit, fontweight='bold', fontsize=14)
     plt.yticks(fontweight='bold', fontsize=14)
     plt.xticks(fontweight='bold', fontsize=14)
-    plt.show()
+    # Save the figure to a file instead of showing it interactively
+    plt.savefig('plot.png')
+    print("Plot saved to plot.png")
+    plt.close()
 
 
 def plot_lcia_multiple_pathways(multiple_pathways, indicator="GWP"):
@@ -25,6 +32,8 @@ def plot_lcia_multiple_pathways(multiple_pathways, indicator="GWP"):
     plt.ylabel("Emissions in kg", fontweight="bold", fontsize=14)
     plt.xticks(fontweight='bold', fontsize=14, rotation=0)
     plt.savefig("multiple_pathways/stacked_plot.png")
-    plt.show()
+    # Save the figure to a file instead of showing it interactively
+    print("Plot saved to multiple_pathways/stacked_plot.png")
+    plt.close()
 
     return plt

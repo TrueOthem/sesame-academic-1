@@ -312,7 +312,8 @@ class NaturalGasTEA(TeaBase):
             heat_rate = 100/self.user_eff/0.29307107
         else:
             filtered = self.filtered_data()
-            heat_rate = float((filtered['heat rate (mmBtu/MWh)']))
+            # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+            heat_rate = float(filtered['heat rate (mmBtu/MWh)'].iloc[0])
 
         return heat_rate #MMBtu/MWh
 
@@ -320,15 +321,18 @@ class NaturalGasTEA(TeaBase):
 
     def get_scgt_weight(self):
         filtered = self.filtered_data()
-        return float((filtered['SCGT in mix']))  # dless
+        # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+        return float(filtered['SCGT in mix'].iloc[0])  # dless
 
     def get_ccgt_weight(self):
         filtered = self.filtered_data()
-        return float((filtered['CCGT in mix']))  # dless
+        # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+        return float(filtered['CCGT in mix'].iloc[0])  # dless
 
     def get_ice_weight(self):
         filtered = self.filtered_data()
-        return float((filtered['ICE in mix']))  # dless
+        # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+        return float(filtered['ICE in mix'].iloc[0])  # dless
 
     def get_other_costs(self):
         turb = self.get_turbine_type()

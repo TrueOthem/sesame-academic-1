@@ -300,7 +300,8 @@ class LCACLI(CLI):
             self.tea_results = tea_analysis.run(self.tea_pathway)
 
         if self.args.group_by != 'sub_stage':
-            self.results['data'] = self.results['data'].groupby(['pathway', 'stage']).agg({'value': 'sum'}).reset_index()
+            # Fix for pandas FutureWarning: specify observed=False explicitly
+            self.results['data'] = self.results['data'].groupby(['pathway', 'stage'], observed=False).agg({'value': 'sum'}).reset_index()
 
     def plot(self):
         graph.plot(self.results, x='stage', group_by=self.args.group_by)
