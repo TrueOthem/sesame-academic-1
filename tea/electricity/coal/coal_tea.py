@@ -323,7 +323,8 @@ class CoalTEA(TeaBase):
     def get_electricity_ci(self):
         if self.lca_pathway is None:
             filtered = self.filtered_data()
-            elec_ci = float((filtered['co2emissions (kg/kWh)']))
+            # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+            elec_ci = float(filtered['co2emissions (kg/kWh)'].iloc[0])
         else:
             elec_ci = self.ccs_carbon_intensity
         return elec_ci
@@ -333,7 +334,8 @@ class CoalTEA(TeaBase):
             heat_rate = 100 / self.user_eff / 0.29307107
         else:
             filtered = self.filtered_data()
-            heat_rate = float((filtered['heat rate (mmBtu/MWh)']))
+            # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+            heat_rate = float(filtered['heat rate (mmBtu/MWh)'].iloc[0])
 
         return heat_rate  # MMBtu/MWh
 
@@ -341,11 +343,13 @@ class CoalTEA(TeaBase):
 
     def get_boiler_weight(self):
         filtered = self.filtered_data()
-        return float((filtered['Boiler in mix']))  # dless
+        # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+        return float(filtered['Boiler in mix'].iloc[0])  # dless
 
     def get_igcc_weight(self):
         filtered = self.filtered_data()
-        return float((filtered['IGCC in mix']))  # dless
+        # Fix for pandas FutureWarning: use iloc[0] instead of float() on Series
+        return float(filtered['IGCC in mix'].iloc[0])  # dless
 
     def get_other_costs(self):
         turb = self.get_generator_type()
