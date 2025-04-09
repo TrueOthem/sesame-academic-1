@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+
+{% block title %}SESAME Academic - Techno-Economic Analysis{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Techno-Economic Analysis (TEA)</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+            <div class="bg-green-50 p-6 rounded-lg shadow-sm mb-6">
+                <h3 class="text-xl font-semibold text-green-700 mb-3">Available Analyses</h3>
+                <div class="api-list" data-api-endpoint="/tea/metadata">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-5/6 mb-2"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-semibold text-blue-700 mb-3">Run Analysis</h3>
+                <form class="space-y-4" id="tea-form">
+                    <div>
+                        <label for="analysis-type" class="form-label">Analysis Type</label>
+                        <select id="analysis-type" class="form-select">
+                            <option value="wind">Wind</option>
+                            <option value="solar">Solar</option>
+                            <option value="dac">Direct Air Capture</option>
+                        </select>
+                    </div>
+                    
+                    <div id="wind-params" class="space-y-3">
+                        <div>
+                            <label for="region" class="form-label">Region</label>
+                            <select id="region" class="form-select">
+                                <option value="California">California</option>
+                                <option value="Texas">Texas</option>
+                                <option value="Iowa">Iowa</option>
+                                <option value="New York">New York</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="install-type" class="form-label">Installation Type</label>
+                            <select id="install-type" class="form-select">
+                                <option value="onshore">Onshore</option>
+                                <option value="offshore">Offshore</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="lifetime" class="form-label">Lifetime (years)</label>
+                            <input type="number" id="lifetime" class="form-input" value="20" min="5" max="40">
+                        </div>
+                        
+                        <div>
+                            <label for="size" class="form-label">Wind Farm Size (MW)</label>
+                            <input type="number" id="size" class="form-input" value="600" min="10" max="2000">
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full">Run Analysis</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Results</h3>
+                
+                <div id="results-container" class="space-y-6">
+                    <div class="text-center text-gray-500 py-12">
+                        <p class="text-lg">Run an analysis to see results</p>
+                        <p class="text-sm mt-2">Select an analysis type and parameters from the form on the left</p>
+                    </div>
+                </div>
+                
+                <div id="chart-container" class="mt-6 hidden">
+                    <h4 class="text-lg font-medium text-gray-700 mb-3">Cost Breakdown</h4>
+                    <div class="chart-container">
+                        <div class="text-center py-12">
+                            <p>Chart will appear here after running analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const teaForm = document.getElementById('tea-form');
+    const resultsContainer = document.getElementById('results-container');
+    const chartContainer = document.getElementById('chart-container');
+    const analysisTypeSelect = document.getElementById('analysis-type');
+    const windParams = document.getElementById('wind-params');
+    
+    // Handle analysis type change
+    analysisTypeSelect.addEventListener('change', function() {
+        // In a real app, we would show/hide different parameter sections based on the selected analysis type
+        // For this demo, we'll just keep the wind parameters visible
+    });
+    
+    teaForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const analysisType = analysisTypeSelect.value;
+        const region = document.getElementById('region').value;
+        const installType = document.getElementById('install-type').value;
+        const lifetime = document.getElementById('lifetime').value;
+        const size = document.getElementById('size').value;
+        
+        // Show loading state
+        resultsContainer.innerHTML = `
+            <div class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                <p class="mt-2 text-gray-600">Running analysis...</p>
+            </div>
+        `;
+        
+        // Simulate API call (in a real app, this would be a fetch to the backend)
+        setTimeout(() => {
+            // Show results
+            resultsContainer.innerHTML = `
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-green-800">Analysis Results: ${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} in ${region}</h4>
+                    <p class="mt-2 text-gray-700">This is a placeholder for actual TEA results. In a real implementation, this would show data returned from the API.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div class="bg-white border rounded-lg p-4">
+                        <h5 class="font-medium text-gray-800 mb-2">Levelized Cost of Energy (LCOE)</h5>
+                        <p class="text-3xl font-bold text-green-600">$42.15<span class="text-sm text-gray-500 font-normal">/MWh</span></p>
+                        <p class="text-sm text-gray-500 mt-1">Based on ${lifetime} year lifetime and ${size} MW capacity</p>
+                    </div>
+                    
+                    <div class="bg-white border rounded-lg p-4">
+                        <h5 class="font-medium text-gray-800 mb-2">Net Present Value (NPV)</h5>
+                        <p class="text-3xl font-bold text-blue-600">$245.8<span class="text-sm text-gray-500 font-normal">M</span></p>
+                        <p class="text-sm text-gray-500 mt-1">At 7% discount rate</p>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto mt-4">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Cost Component</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Capital Expenditure</td>
+                                <td>1,250</td>
+                                <td>$/kW</td>
+                                <td>65%</td>
+                            </tr>
+                            <tr>
+                                <td>Fixed O&M</td>
+                                <td>44</td>
+                                <td>$/kW-yr</td>
+                                <td>18%</td>
+                            </tr>
+                            <tr>
+                                <td>Variable O&M</td>
+                                <td>2.5</td>
+                                <td>$/MWh</td>
+                                <td>7%</td>
+                            </tr>
+                            <tr>
+                                <td>Transmission & Distribution</td>
+                                <td>14</td>
+                                <td>$/MWh</td>
+                                <td>10%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Show chart container
+            chartContainer.classList.remove('hidden');
+            
+            // Simulate chart (in a real app, this would use a charting library)
+            const chartDiv = chartContainer.querySelector('.chart-container');
+            chartDiv.innerHTML = `
+                <div class="bg-gray-50 p-4 rounded border text-center">
+                    <p class="text-gray-500 mb-4">Cost Breakdown for ${analysisType.charAt(0).toUpperCase() + analysisType.slice(1)} in ${region}</p>
+                    <div class="flex h-40 items-end justify-around px-4">
+                        <div class="w-16 bg-green-500" style="height: 65%;">
+                            <div class="text-xs text-white pt-1">65%</div>
+                        </div>
+                        <div class="w-16 bg-green-500" style="height: 18%;">
+                            <div class="text-xs text-white pt-1">18%</div>
+                        </div>
+                        <div class="w-16 bg-green-500" style="height: 7%;">
+                            <div class="text-xs text-white pt-1">7%</div>
+                        </div>
+                        <div class="w-16 bg-green-500" style="height: 10%;">
+                            <div class="text-xs text-white pt-1">10%</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-around px-4 mt-2 text-xs text-gray-600">
+                        <div>CapEx</div>
+                        <div>Fixed O&M</div>
+                        <div>Variable O&M</div>
+                        <div>T&D</div>
+                    </div>
+                </div>
+            `;
+        }, 1500);
+    });
+});
+</script>
+{% endblock %}

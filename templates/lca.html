@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}SESAME Academic - Life Cycle Assessment{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Life Cycle Assessment (LCA)</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+            <div class="bg-blue-50 p-6 rounded-lg shadow-sm mb-6">
+                <h3 class="text-xl font-semibold text-blue-700 mb-3">Available Indicators</h3>
+                <div class="api-list" data-api-endpoint="/lca/metadata">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-5/6 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-3/5"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-green-50 p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-semibold text-green-700 mb-3">Run Analysis</h3>
+                <form class="space-y-4" id="lca-form">
+                    <div>
+                        <label for="analysis-type" class="form-label">Analysis Type</label>
+                        <select id="analysis-type" class="form-select">
+                            <option value="GWP">Global Warming Potential</option>
+                            <option value="AP">Acidification Potential</option>
+                            <option value="EP">Eutrophication Potential</option>
+                            <option value="Energy">Energy</option>
+                            <option value="Water">Water</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="pathway" class="form-label">Pathway</label>
+                        <select id="pathway" class="form-select">
+                            <option value="electricity">Electricity</option>
+                            <option value="hydrogen">Hydrogen</option>
+                            <option value="methanol">Methanol</option>
+                            <option value="gasoline">Gasoline</option>
+                            <option value="diesel">Diesel</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full">Run Analysis</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Results</h3>
+                
+                <div id="results-container" class="space-y-6">
+                    <div class="text-center text-gray-500 py-12">
+                        <p class="text-lg">Run an analysis to see results</p>
+                        <p class="text-sm mt-2">Select an analysis type and pathway from the form on the left</p>
+                    </div>
+                </div>
+                
+                <div id="chart-container" class="mt-6 hidden">
+                    <h4 class="text-lg font-medium text-gray-700 mb-3">Visualization</h4>
+                    <div class="chart-container">
+                        <div class="text-center py-12">
+                            <p>Chart will appear here after running analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const lcaForm = document.getElementById('lca-form');
+    const resultsContainer = document.getElementById('results-container');
+    const chartContainer = document.getElementById('chart-container');
+    
+    lcaForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const analysisType = document.getElementById('analysis-type').value;
+        const pathway = document.getElementById('pathway').value;
+        
+        // Show loading state
+        resultsContainer.innerHTML = `
+            <div class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-gray-600">Running analysis...</p>
+            </div>
+        `;
+        
+        // Simulate API call (in a real app, this would be a fetch to the backend)
+        setTimeout(() => {
+            // Show results
+            resultsContainer.innerHTML = `
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-blue-800">Analysis Results: ${analysisType} for ${pathway}</h4>
+                    <p class="mt-2 text-gray-700">This is a placeholder for actual analysis results. In a real implementation, this would show data returned from the API.</p>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Stage</th>
+                                <th>Value</th>
+                                <th>Unit</th>
+                                <th>Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Upstream</td>
+                                <td>45.2</td>
+                                <td>kg CO2 eq</td>
+                                <td>35%</td>
+                            </tr>
+                            <tr>
+                                <td>Midstream</td>
+                                <td>28.7</td>
+                                <td>kg CO2 eq</td>
+                                <td>22%</td>
+                            </tr>
+                            <tr>
+                                <td>Process</td>
+                                <td>38.1</td>
+                                <td>kg CO2 eq</td>
+                                <td>29%</td>
+                            </tr>
+                            <tr>
+                                <td>End Use</td>
+                                <td>18.4</td>
+                                <td>kg CO2 eq</td>
+                                <td>14%</td>
+                            </tr>
+                            <tr class="font-semibold bg-gray-100">
+                                <td>Total</td>
+                                <td>130.4</td>
+                                <td>kg CO2 eq</td>
+                                <td>100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // Show chart container
+            chartContainer.classList.remove('hidden');
+            
+            // Simulate chart (in a real app, this would use a charting library)
+            const chartDiv = chartContainer.querySelector('.chart-container');
+            chartDiv.innerHTML = `
+                <div class="bg-gray-50 p-4 rounded border text-center">
+                    <p class="text-gray-500 mb-4">This is a placeholder for an actual chart visualization</p>
+                    <div class="flex h-40 items-end justify-around px-4">
+                        <div class="w-16 bg-blue-500" style="height: 35%;">
+                            <div class="text-xs text-white pt-1">35%</div>
+                        </div>
+                        <div class="w-16 bg-blue-500" style="height: 22%;">
+                            <div class="text-xs text-white pt-1">22%</div>
+                        </div>
+                        <div class="w-16 bg-blue-500" style="height: 29%;">
+                            <div class="text-xs text-white pt-1">29%</div>
+                        </div>
+                        <div class="w-16 bg-blue-500" style="height: 14%;">
+                            <div class="text-xs text-white pt-1">14%</div>
+                        </div>
+                    </div>
+                    <div class="flex justify-around px-4 mt-2 text-xs text-gray-600">
+                        <div>Upstream</div>
+                        <div>Midstream</div>
+                        <div>Process</div>
+                        <div>End Use</div>
+                    </div>
+                </div>
+            `;
+        }, 1500);
+    });
+});
+</script>
+{% endblock %}

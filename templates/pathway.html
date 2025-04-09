@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}SESAME Academic - Pathway Analysis{% endblock %}
+
+{% block content %}
+<div class="bg-white shadow-md rounded-lg p-6">
+    <h2 class="text-3xl font-bold text-gray-800 mb-6">Pathway Analysis</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-1">
+            <div class="bg-purple-50 p-6 rounded-lg shadow-sm mb-6">
+                <h3 class="text-xl font-semibold text-purple-700 mb-3">Available Pathways</h3>
+                <div class="api-list" data-api-endpoint="/pathway/metadata">
+                    <div class="animate-pulse">
+                        <div class="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-5/6 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-2/3 mb-2"></div>
+                        <div class="h-4 bg-gray-200 rounded w-3/5"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-semibold text-blue-700 mb-3">Select Pathway</h3>
+                <form class="space-y-4" id="pathway-form">
+                    <div>
+                        <label for="end-use" class="form-label">End Use</label>
+                        <select id="end-use" class="form-select">
+                            <option value="electricity">Electricity</option>
+                            <option value="hydrogen">Hydrogen</option>
+                            <option value="methanol">Methanol</option>
+                            <option value="gasoline">Gasoline</option>
+                            <option value="diesel">Diesel</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="pathway" class="form-label">Pathway</label>
+                        <select id="pathway" class="form-select">
+                            <option value="natural-gas">Natural Gas</option>
+                            <option value="coal">Coal</option>
+                            <option value="solar">Solar</option>
+                            <option value="wind">Wind</option>
+                            <option value="nuclear">Nuclear</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary w-full">View Pathway</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="lg:col-span-2">
+            <div class="bg-white p-6 rounded-lg shadow-sm">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">Pathway Visualization</h3>
+                
+                <div id="pathway-container" class="space-y-6">
+                    <div class="text-center text-gray-500 py-12">
+                        <p class="text-lg">Select a pathway to visualize</p>
+                        <p class="text-sm mt-2">Choose an end use and pathway from the form on the left</p>
+                    </div>
+                </div>
+                
+                <div id="stages-container" class="mt-6 hidden">
+                    <h4 class="text-lg font-medium text-gray-700 mb-3">Pathway Stages</h4>
+                    <div class="overflow-x-auto">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Stage</th>
+                                    <th>Activity</th>
+                                    <th>Resource</th>
+                                    <th>Product</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stages-table-body">
+                                <!-- Stages will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const pathwayForm = document.getElementById('pathway-form');
+    const pathwayContainer = document.getElementById('pathway-container');
+    const stagesContainer = document.getElementById('stages-container');
+    const stagesTableBody = document.getElementById('stages-table-body');
+    
+    pathwayForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const endUse = document.getElementById('end-use').value;
+        const pathway = document.getElementById('pathway').value;
+        
+        // Show loading state
+        pathwayContainer.innerHTML = `
+            <div class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                <p class="mt-2 text-gray-600">Loading pathway...</p>
+            </div>
+        `;
+        
+        // Simulate API call (in a real app, this would be a fetch to the backend)
+        setTimeout(() => {
+            // Show pathway visualization
+            pathwayContainer.innerHTML = `
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <h4 class="font-medium text-purple-800">Pathway: ${endUse.charAt(0).toUpperCase() + endUse.slice(1)} from ${pathway.charAt(0).toUpperCase() + pathway.slice(1)}</h4>
+                    <p class="mt-2 text-gray-700">This is a placeholder for an actual pathway visualization. In a real implementation, this would show a diagram of the selected pathway.</p>
+                </div>
+                
+                <div class="mt-6 bg-white border rounded-lg p-4">
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                            <span class="font-medium">Upstream</span>
+                            <span class="text-gray-500">→</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                            <span class="font-medium">Midstream</span>
+                            <span class="text-gray-500">→</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                            <span class="font-medium">Process</span>
+                            <span class="text-gray-500">→</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2 bg-gray-100 rounded">
+                            <span class="font-medium">End Use</span>
+                            <span class="text-gray-500"></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Show stages container
+            stagesContainer.classList.remove('hidden');
+            
+            // Populate stages table
+            stagesTableBody.innerHTML = '';
+            
+            // Sample data for demonstration
+            const stages = [
+                { stage: 'Upstream', activity: 'Resource Extraction', resource: pathway, product: pathway },
+                { stage: 'Midstream', activity: 'Transportation', resource: pathway, product: `${pathway} (transported)` },
+                { stage: 'Process', activity: 'Conversion', resource: `${pathway} (transported)`, product: endUse },
+                { stage: 'End Use', activity: 'Consumption', resource: endUse, product: 'Energy Service' }
+            ];
+            
+            stages.forEach(stage => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${stage.stage}</td>
+                    <td>${stage.activity}</td>
+                    <td>${stage.resource}</td>
+                    <td>${stage.product}</td>
+                `;
+                stagesTableBody.appendChild(row);
+            });
+        }, 1500);
+    });
+});
+</script>
+{% endblock %}

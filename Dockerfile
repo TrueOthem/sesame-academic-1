@@ -44,5 +44,5 @@ RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]
 
-# Default command to run the CLI
-CMD ["python", "cli.py", "--analysis", "lca", "--defaults"]
+# Default command to run the web interface
+CMD ["flask", "run", "--host=0.0.0.0"]

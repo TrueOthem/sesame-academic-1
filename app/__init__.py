@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -23,8 +23,16 @@ from app.industry.aluminum import app as industry_aluminum_app
 from app.industry.fleet import app as industrial_fleet_app
 from core.common import JSONEncoder
 
-app = Flask('SESAME')
+app = Flask('SESAME', template_folder='templates', static_folder='static')
 CORS(app)
+
+# Add custom template filters
+@app.template_filter('now')
+def _now(format_string):
+    import datetime
+    if format_string == 'year':
+        return datetime.datetime.now().year
+    return datetime.datetime.now().strftime(format_string)
 
 sentry_dsn = settings.SENTRY_DSN
 if sentry_dsn is not None:
@@ -44,7 +52,19 @@ def handle_error(err):
 
 @app.route('/')
 def _root():
-    return 'ok'
+    return render_template('index.html')
+
+@app.route('/lca/ui')
+def lca_ui():
+    return render_template('lca.html')
+
+@app.route('/tea/ui')
+def tea_ui():
+    return render_template('tea.html')
+
+@app.route('/pathway/ui')
+def pathway_ui():
+    return render_template('pathway.html')
 
 app.register_blueprint(auth_app, url_prefix='/auth')
 app.register_blueprint(users_app, url_prefix='/users')

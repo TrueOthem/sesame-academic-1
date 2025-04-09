@@ -20,11 +20,13 @@ services:
     depends_on:
       - db
 
-  # Web interface service
+  # Web interface service with frontend
   sesame-web:
     build: .
     volumes:
       - ./data:/app/data
+      - ./templates:/app/templates
+      - ./static:/app/static
     environment:
       - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-postgres}
