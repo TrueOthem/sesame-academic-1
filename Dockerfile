@@ -36,10 +36,14 @@ ENV PYTHONUNBUFFERED=1 \
 # Create a non-root user to run the application
 RUN useradd -m sesame
 RUN chown -R sesame:sesame /app
+
+# Create X11 directory with proper permissions
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
+
 USER sesame
 
 # Create a script to start Xvfb and run the application
-RUN echo '#!/bin/bash\nXvfb :99 -screen 0 1024x768x16 &\nsleep 1\nexec "$@"' > /app/entrypoint.sh
+RUN echo '#!/bin/bash\nrm -f /tmp/.X99-lock\nXvfb :99 -screen 0 1024x768x16 &\nsleep 1\nexec "$@"' > /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]

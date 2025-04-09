@@ -4,19 +4,29 @@ from analysis.system.power_historic.queries import queries
 
 analyses = {}
 
-states = [row['state'] for row in queries.states()]
-if len(states) == 0:
-    # data must not be populated in the database
-    # add a placeholder
-    states.append('<placeholder>')
+try:
+    states = [row['state'] for row in queries.states()]
+    if len(states) == 0:
+        # data must not be populated in the database
+        # add a placeholder
+        states.append('<placeholder>')
+except Exception as e:
+    print(f"Error fetching states: {e}")
+    # Add a placeholder when database connection fails
+    states = ['<placeholder>']
 
 # FIXME: need to filter based on state
 def years():
-    year_range = queries.year_range()
-    res = []
-    if year_range['min_year'] is not None:
-        res = [str(year) for year in range(int(year_range['min_year']),int(year_range['max_year']) + 1)]
-    return res
+    try:
+        year_range = queries.year_range()
+        res = []
+        if year_range['min_year'] is not None:
+            res = [str(year) for year in range(int(year_range['min_year']),int(year_range['max_year']) + 1)]
+        return res
+    except Exception as e:
+        print(f"Error fetching year range: {e}")
+        # Return placeholder years when database connection fails
+        return ['2020', '2021', '2022']
 
 analyses['hourly_generation'] = SystemAnalysis(
     'hourly_generation',

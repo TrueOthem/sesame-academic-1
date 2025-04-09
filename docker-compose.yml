@@ -37,6 +37,7 @@ services:
       - FLASK_ENV=development
       - SKIP_DB_CONNECTION=true
       - JWT_SECRET=test_secret
+      - DB_URL=postgresql://postgres:postgres@db:5432/sesame
     command: ["flask", "run", "--host=0.0.0.0"]
     ports:
       - "5001:5000"
