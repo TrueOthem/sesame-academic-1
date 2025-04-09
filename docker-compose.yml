@@ -1,7 +1,27 @@
 version: '3.8'
 
 services:
-  sesame:
+  # CLI service with interactive plotting
+  sesame-cli:
+    build: .
+    volumes:
+      - ./data:/app/data
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    environment:
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_NAME=${DB_NAME:-sesame}
+      - DISPLAY=:99
+      - SKIP_DB_CONNECTION=true
+      - JWT_SECRET=test_secret
+    command: ["--analysis", "lca", "--defaults"]
+    depends_on:
+      - db
+
+  # Web interface service
+  sesame-web:
     build: .
     volumes:
       - ./data:/app/data
@@ -11,7 +31,13 @@ services:
       - DB_HOST=${DB_HOST:-db}
       - DB_PORT=${DB_PORT:-5432}
       - DB_NAME=${DB_NAME:-sesame}
-    command: ["--analysis", "lca", "--defaults"]
+      - FLASK_APP=app
+      - FLASK_ENV=development
+      - SKIP_DB_CONNECTION=true
+      - JWT_SECRET=test_secret
+    command: ["flask", "run", "--host=0.0.0.0"]
+    ports:
+      - "5000:5000"
     depends_on:
       - db
 

@@ -1,7 +1,3 @@
-# Set non-interactive backend to avoid macOS issues
-import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend
-
 import matplotlib.pyplot as plt
 from analysis.lca import perform_lcia
 
@@ -18,10 +14,7 @@ def plot(analysis_result, x, y='value', group_by=None):
     plt.ylabel(unit, fontweight='bold', fontsize=14)
     plt.yticks(fontweight='bold', fontsize=14)
     plt.xticks(fontweight='bold', fontsize=14)
-    # Save the figure to a file instead of showing it interactively
-    plt.savefig('plot.png')
-    print("Plot saved to plot.png")
-    plt.close()
+    plt.show()
 
 
 def plot_lcia_multiple_pathways(multiple_pathways, indicator="GWP"):
@@ -32,8 +25,6 @@ def plot_lcia_multiple_pathways(multiple_pathways, indicator="GWP"):
     plt.ylabel("Emissions in kg", fontweight="bold", fontsize=14)
     plt.xticks(fontweight='bold', fontsize=14, rotation=0)
     plt.savefig("multiple_pathways/stacked_plot.png")
-    # Save the figure to a file instead of showing it interactively
-    print("Plot saved to multiple_pathways/stacked_plot.png")
-    plt.close()
+    plt.show()
 
     return plt

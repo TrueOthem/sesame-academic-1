@@ -39,9 +39,58 @@ This repository contains the core libraries and tools for performing sustainabil
 
 ## Usage
 
-### Command Line Interface
+### Using Docker (Recommended)
 
-The primary way to interact with SESAME Academic is through the command-line interface:
+The easiest way to run SESAME Academic is using Docker:
+
+1. **Run the CLI with interactive plotting**:
+   ```bash
+   docker-compose up sesame-cli
+   ```
+   This will run the LCA analysis with default values and display the plots interactively.
+
+2. **Run the web interface**:
+   ```bash
+   docker-compose up sesame-web
+   ```
+   This will start the Flask web server on port 5000. You can access it at http://localhost:5000.
+
+3. **Run both services and the database**:
+   ```bash
+   docker-compose up
+   ```
+
+### Command Line Interface (without Docker)
+
+If you prefer to run SESAME Academic without Docker, you can use the provided scripts for your platform:
+
+#### macOS
+
+1. Install XQuartz from https://www.xquartz.org/
+2. Run the macOS script:
+   ```bash
+   ./run_macos.sh
+   ```
+
+#### Linux
+
+1. Run the Linux script:
+   ```bash
+   ./run_linux.sh
+   ```
+
+#### Windows
+
+1. Install VcXsrv from https://sourceforge.net/projects/vcxsrv/
+2. Start VcXsrv with "Multiple windows" and "No Access Control" options
+3. Run the Windows script:
+   ```bash
+   run_windows.bat
+   ```
+
+### Manual CLI Usage
+
+You can also run the CLI directly:
 
 ```bash
 python cli.py --analysis <analysis_type> [--defaults] [--input <input_file>] [--output <output_file>] [--group-by <group_by>]
